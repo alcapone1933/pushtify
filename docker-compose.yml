@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  pushtify:
+    # build:
+      # dockerfile: ./Dockerfile
+    image: alcapone1933/pushtify:v0.0.1
+    container_name: pushtify
+    restart: always
+    tty: true
+    # volumes:
+      # - data:/app/data
+    environment:
+      - TZ=Europe/Berlin
+      - "SHOUTRRR_URL=discord://123456abc@555555555555555"
+      - GOTIFY_TOKEN=1234567890
+      - GOTIFY_URL=http://192.168.178.16:80
+      # - GOTIFY_URL=http://gotify.example.org
+      - NOTIFY_FILE_SAVE=false
+# volumes:
+  # data:

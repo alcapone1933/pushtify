@@ -1,53 +1,63 @@
 # Pushtify
 
-Gotify to Pushover forwarder:
+Dieser Docker-Container basiert auf dem Pushtify-Projekt von [Sebastian Wüthrich](https://github.com/sebw/pushtify).
 
-- Gotify: a self hosted Open Source notification system, with an Android app.
-- Pushover: a PaaS closed source notification system. Available on iOS and Android.
+Das ursprüngliche Pushtify-Projekt ist ein Tool zum Weiterleiten von Gotify Benachrichtigungen an Pushover.
 
-## Why this container image
+Diese Docker-Container leitet Gotify Benachrichtigungen an noch mehr Dienste per [shoutrrr](https://containrrr.dev/shoutrrr/latest/services/overview/) als python script.
 
-Because I moved from Android to iPhone.
-
-I run about 20 applications that notify Gotify on a daily basis.
-
-I didn't want to reconfigure all of those to notify on a new iOS compatible notification system (here Pushover).
-
-## How it works
-
-This container constantly listens for Gotify notifications through websocket and forwards received notifications to Pushover. 
-
-It uses the `ntfy` Python library to forward messages.
-
-## Requirements
-
-- a client token in Gotify
-- the gotify hostname
-- a pushover user key
-
-## Notes
-
-### Building the container image locally
+### Docker CLI
 
 ```bash
-git clone https://github.com/sebw/pushtify
-cd pushtify
-docker build -t pushtify:v0.5 .
+docker run -dt \
+    --restart always \
+    --name pushtify \
+    -e TZ=Europe/Berlin \
+    -e "SHOUTRRR_URL=discord://123456abc@555555555555555" \
+    -e GOTIFY_TOKEN=1234567890 \
+    -e GOTIFY_URL=https://gotify.example.org \
+    -e NOTIFY_FILE_SAVE=false \
+    alcapone1933/pushtify:latest
+
 ```
 
-### Running on Kubernetes
-
-```bash
-git clone https://github.com/sebw/pushtify
-cd pushtify/kubernetes
-vim deployment.yaml (edit your variables, ideally store them as k8s secrets)
-kubectl apply -f deployment.yaml
+### Docker Compose
+```yaml
+version: "3.9"
+services:
+  pushtify:
+    image: alcapone1933/pushtify:latest
+    container_name: pushtify
+    restart: always
+    tty: true
+    # volumes:
+      # - data:/app/data
+    environment:
+      - TZ=Europe/Berlin
+      - "SHOUTRRR_URL=discord://123456abc@555555555555555"
+      - GOTIFY_TOKEN=1234567890
+      - GOTIFY_URL=http://192.168.178.16:80
+      # - GOTIFY_URL=https://gotify.example.org
+      - NOTIFY_FILE_SAVE=false
+# volumes:
+  # data:
 ```
+* * *
 
-If connection to Gotify websocket is lost, the Python script will stop and the liveness probe will fail, triggering a restart of the pod.
+## Volume Parameter
 
-### Running with Podman (or Docker)
+| Name (Beschreibung) #Optional | Wert    | Standard       |
+| ----------------------------- | ------- | -------------- |
+| Speicherort Json Nachrichten  | volume  | data:/app/data |
 
-```bash
-podman run --name pushtify -e GOTIFY_TOKEN=zzz -e GOTIFY_HOST=gotify.example.org -e PUSHOVER_USERKEY=xxx ghcr.io/sebw/pushtify:v0.5
-```
+&nbsp;
+
+## Env Parameter
+
+| Name (Beschreibung)                                                   | Wert              | Standard           | Beispiel                            |
+| --------------------------------------------------------------------- | ----------------- | ------------------ | ----------------------------------- |
+| Zeitzone                                                              | TZ                | Europe/Berlin      | Europe/Berlin                       |
+| Gotify client Token                                                   | GOTIFY_TOKEN      | ------------------ | 1234567890                          |
+| Gotify url für den Server                                             | GOTIFY_URL        | ------------------ | http://192.168.178.16:80            |
+| SHOUTRRR URL: Deine Shoutrrr URL z.b ( gotify,discord,telegram,email) | SHOUTRRR_URL      | ------------------ | discord://123456abc@555555555555555 |
+| Nachrichten abspeichern in /app/data als json datei                   | NOTIFY_FILE_SAVE  | false              | false oder true                     |
