@@ -55,7 +55,7 @@ def on_message(ws, message):
         process_notification(msg)
     except json.JSONDecodeError as e:
         print(f"Error decoding JSON: {e}")
-    
+
     print(f"Received message: {message}")
 
 def on_error(ws, error):
@@ -81,4 +81,7 @@ if __name__ == "__main__":
                               on_message=on_message,
                               on_error=on_error,
                               on_close=on_close)
-    wsapp.run_forever()
+    #wsapp.run_forever()
+    wsapp.run_forever(dispatcher=rel, reconnect=60)  # Set dispatcher to automatic reconnection, 5 second reconnect delay if connection closed unexpectedly
+    rel.signal(2, rel.abort)  # Keyboard Interrupt
+    rel.dispatch()

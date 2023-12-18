@@ -1,5 +1,5 @@
 FROM alcapone1933/alpine:latest
-RUN apk add --update --no-cache tzdata curl bash tini jq py3-pip && pip3 install --break-system-packages websocket-client && \
+RUN apk add --update --no-cache tzdata curl bash tini jq py3-pip && pip3 install --break-system-packages websocket-client rel && \
     rm -rf /var/cache/apk/* && \
     mkdir -p /app/data
 
