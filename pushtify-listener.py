@@ -3,6 +3,7 @@ import json
 import os
 import subprocess
 from datetime import datetime
+from rel
 
 shoutrrr_url = os.environ['SHOUTRRR_URL']
 gotify_url = os.environ['GOTIFY_URL']
