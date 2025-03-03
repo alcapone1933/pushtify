@@ -23,7 +23,6 @@ docker run -dt \
 
 ### Docker Compose
 ```yaml
-version: "3.9"
 services:
   pushtify:
     image: alcapone1933/pushtify:latest
